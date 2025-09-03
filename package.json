@@ -1,0 +1,26 @@
+{
+  "name": "pharmahopers-timed-tasks",
+  "version": "1.0.0",
+  "description": "pharmahopers timed tasks",
+  "main": "index.js",
+  "scripts": {
+    "dev":  "NODE_ENV=development node index.js",
+    "start": "NODE_ENV=production node index.js",
+    "start_notifier": "NODE_ENV=production node notifier/index.js"
+  },
+  "author": "Harshvardhan Singh",
+  "dependencies": {
+    "axios": "^0.18.1",
+    "bluebird": "^3.5.1",
+    "dotenv": "^8.2.0",
+    "lodash": "^4.17.4",
+    "mailgun-js": "^0.21.0",
+    "moment": "^2.22.2",
+    "mysql": "^2.15.0",
+    "mysql2": "^3.11.0",
+    "node-cron": "^2.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.14.1"
+  }
+}
