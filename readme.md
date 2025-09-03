@@ -30,7 +30,8 @@
             PACKAGE: 'rs0d_packages_new',
             COMPANY_PACKAGE_HISTORY: 'rs0d_listing_package_history',
             BANNERS: 'rs0d_banners',
-            EMAIL_TEMPLATES: 'rs0d_email_templates'
+            EMAIL_TEMPLATES: 'rs0d_email_templates',
+            USER: 'rs0d_users'
         },
         MAILGUN_API_KEY: 'xxxxxx',
         MAILGUN_DOMAIN: 'xxxx',
