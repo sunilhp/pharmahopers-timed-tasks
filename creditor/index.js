@@ -49,6 +49,13 @@ const _moveExpiryToFreePackage = async (connection) => {
         WHERE id = ${c.FREE_PACKAGE_ID};`);
     freePackage = freePackage[0];
 
+    // Get listing IDs with expired packages
+    const listingIdsInfo = await db.queryAsync(`SELECT listing_id FROM ${t.COMPANY_PACKAGE} WHERE package_id != ${c.FREE_PACKAGE_ID} AND ending_on < '${currentDate}';`);
+    let listingIds = [];
+    if (listingIdsInfo.length) {
+        listingIds = listingIdsInfo.map(row => row.listing_id);
+    }
+
     await db.queryAsync(`UPDATE ${t.COMPANY_PACKAGE}
         SET
             package_id = ${c.FREE_PACKAGE_ID},
@@ -59,23 +66,54 @@ const _moveExpiryToFreePackage = async (connection) => {
             cycle_start = '${currentDate}',
             cycle_end = '${currentDate}'
         WHERE package_id != ${c.FREE_PACKAGE_ID} AND ending_on < '${currentDate}';`);
+
+    // Reset user credit limits
+    if (listingIds.length) {
+        await db.queryAsync(`UPDATE ${t.USER} SET allowed_buy_credit_limit = NULL WHERE listing_id IN (${listingIds.join(',')});`);
+    }
 }
 
 
 const _removeAddonCredits = async (connection) => {
     const currentDate = _getDate();
+
+    // Get listing IDs with expired addon
+    const listingIdsInfo = await db.queryAsync(`SELECT listing_id FROM ${t.COMPANY_PACKAGE} WHERE addon_end < '${currentDate}';`);
+    let listingIds = [];
+    if (listingIdsInfo.length) {
+        listingIds = listingIdsInfo.map(row => row.listing_id);
+    }
+
     await db.queryAsync(`UPDATE ${t.COMPANY_PACKAGE}
         SET
             addon_credits = 0
         WHERE addon_end < '${currentDate}';`);
+
+    // Reset user credit limits
+    if (listingIds.length) {
+        await db.queryAsync(`UPDATE ${t.USER} SET allowed_add_on_credit_limit = NULL WHERE listing_id IN (${listingIds.join(',')});`);
+    }
 }
 
 const _removeOldLeadAddonCredits = async (connection) => {
     const currentDate = _getDate();
+
+    // Get listing IDs with expired old lead addon credits
+    const listingIdsInfo = await db.queryAsync(`SELECT listing_id FROM ${t.COMPANY_PACKAGE} WHERE old_lead_addon_credits_end < '${currentDate}';`);
+    let listingIds = [];
+    if (listingIdsInfo.length) {
+        listingIds = listingIdsInfo.map(row => row.listing_id);
+    }
+
     await db.queryAsync(`UPDATE ${t.COMPANY_PACKAGE}
         SET
             old_lead_addon_credits = 0
         WHERE old_lead_addon_credits_end < '${currentDate}';`);
+
+    // Reset user credit limits
+    if (listingIds.length) {
+        await db.queryAsync(`UPDATE ${t.USER} SET allowed_old_lead_buy_limit = NULL WHERE listing_id IN (${listingIds.join(',')});`);
+    }
 }
 
 
